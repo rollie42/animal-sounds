@@ -1,0 +1,13 @@
+steps:
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/animal-sounds-341512/animal-sounds-img', '.']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/animal-sounds-341512/animal-sounds-img']
+# Deploy container image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'animal-sounds', '--image', 'gcr.io/animal-sounds-341512/animal-sounds-img', '--region', 'asia-northeast1']
+images:
+- gcr.io/animal-sounds-341512/animal-sounds-img
