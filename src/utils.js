@@ -14,9 +14,9 @@ export function groupBy(list, keyGetter) {
 }
 
 // How in God's name does javascript not have this already...
-export function sleep(ms, {signal}) {
+export function sleep(ms, props) {
     let res;
-    signal?.addEventListener('abort', () => {
+    props?.signal?.addEventListener('abort', () => {
         res()
     })
     return new Promise((resolve, reject) => {

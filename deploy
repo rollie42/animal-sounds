@@ -1,1 +1,2 @@
+gcloud config configurations activate animal-sounds &&
 gcloud builds submit
