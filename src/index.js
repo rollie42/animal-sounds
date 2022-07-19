@@ -15,9 +15,6 @@ import PlayGame from 'PlayGame/PlayGame'
 import Settings from 'Settings/Settings'
 
 const Container = styled.div`
-  height: 100vh;
-  display: flex;
-  justify-content: center;
 `
 
 const GlobalStyle = createGlobalStyle`

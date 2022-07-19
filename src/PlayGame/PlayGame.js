@@ -41,6 +41,7 @@ let currentAnimal
 
 function Animal({animal}) {    
   const [selected, setSelected] = useState(false)
+  const [showKeyboard, setShowKeyboard] = useState(false)
   const [settings] = useGameSettings()
   const ttsApi = useTtsApi()
   const lang = settings.language
@@ -75,6 +76,8 @@ function Animal({animal}) {
       
       if (settings.keyboardInterface.level === 0) {
         setSelected(false)
+      } else {
+        setShowKeyboard(true)
       }
       currentAnimal = undefined
       
@@ -85,14 +88,18 @@ function Animal({animal}) {
   }, [lang, selected, setSelected, settings])
 
   const quizHandler = async () => {
+    console.log('quiz done...')
+    const audio = await ttsApi.getAudio(animal.name(lang))
+    await playAudio(Uint8Array.from(audio.audioContent.data).buffer)
     await sleep(1100)
     setSelected(false)
+    setShowKeyboard(false);
   }
 
   return (
     <>
       <AnimalImg ref={ref} selected={selected} onClick={clickHandler} src={animal.thumbnails[0]} alt={animal.name(lang)} />
-      {selected && settings.keyboardInterface.level !== 0 && <OverlayContainer>        
+      {showKeyboard && settings.keyboardInterface.level !== 0 && <OverlayContainer>        
           <AnimalQuizContainer>
             {settings.language === 'English'
               ? <EngKeyboard word={animal.id} onComplete={quizHandler}/>
@@ -141,6 +148,12 @@ function BackButton() {
   </BackButtonContainer>)
 }
 
+const PageContainer = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+`
+
 const Container = styled(HFlex)`
     justify-content: flex-start;
 `
@@ -154,9 +167,11 @@ export default function PlayGame() {
     }
 
     return (
+        <PageContainer>
         <Container>
           <BackButton />
           {animals.map(animal => <Animal key={animal.id} animal={animal} />)}
         </Container>
+        </PageContainer>
     )
 }

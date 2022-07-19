@@ -100,8 +100,9 @@ const JPKeyboardKeyContainer = styled.span`
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 15.5vh;
+  font-size: 16.5vh;
   font-weight: 700;
+  line-height: 0;
   cursor: pointer;
   ${props => 
     props.keyStyle === 'hidden' ? `
@@ -242,14 +243,14 @@ const [useWord, , WordProvider] = createNonNullCtx()
 
 export function JPKeyboard({ word, onComplete }) {
   const [curLetterIdx, setCurLetterIdx] = useState(0)
-  const [flyoutKana, setFlyoutKana] = useState(undefined)
   const kana = ['あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと', 'なにぬねの', 'はひふへほ', 'まみむめも', 'や　ゆ　よ', 'らりるれろ', '　　　　　', 'わをん　　', '　　　　　']
 
   useEffect(() => {
     if (curLetterIdx >= word.length) {
       onComplete()
     }
-  }, [curLetterIdx, onComplete, word])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curLetterIdx, word])
 
   return (
     <FlyoutKanaProvider defaultValue={undefined}>

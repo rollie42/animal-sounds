@@ -24,7 +24,6 @@ import {
 import { animals } from '../StaticContent'
 import { keyboardOptions, useGameSettings } from 'Context'
 import { useNavigate } from 'react-router'
-import Highlight, { defaultProps } from "prism-react-renderer"
 
 const Label = chakra(FormLabel, {
     baseStyle: {
@@ -169,7 +168,8 @@ function ContentOptions() {
 
 const SelectInputGroup = chakra('div', {
     baseStyle: {
-        width: 80
+        minWidth: 'md',
+        maxWidth: 'md'
     }
 })
 
@@ -179,7 +179,7 @@ function KeyboardOptions() {
         setSettings(s => {return {...s, keyboardInterface: keyboardOptions.find(o => o.id === id) }})
     }
     return (
-    <Stack>
+    <VFlex>
         <InputGroup>
             <Label><LabelDiv>Keyboard interaction</LabelDiv></Label>
             <SelectInputGroup>
@@ -189,13 +189,18 @@ function KeyboardOptions() {
                     )}
                 </Select>
             </SelectInputGroup>
-            <div>
-                {settings.keyboardInterface.description}
-            </div>
-        </InputGroup>        
-    </Stack>
+        </InputGroup>    
+        <div>
+            {settings.keyboardInterface.description}
+        </div>    
+    </VFlex>
     )
 }
+
+const PageContainer = styled(HFlex)`
+    justify-content: center;
+    padding: 10px 0px 20px 0px;
+`
 
 const Container = styled(VFlex)`
     max-width: 700px;
@@ -213,6 +218,7 @@ const PlayButton = chakra(Button, {
 export default function Settings() {
     const navigate = useNavigate()
     return (
+        <PageContainer>
         <Container>
             <RadioBtns 
                 label={"Language"} 
@@ -226,5 +232,6 @@ export default function Settings() {
                 options={["Alphabetical", "Shuffle"]} />
             <PlayButton onClick={() => navigate('/play')}>Play!</PlayButton>                       
         </Container>
+        </PageContainer>
     )
 } 
