@@ -165,12 +165,26 @@ export default function PlayGame() {
       animals = shuffleArray(animals)
     }
 
+    const scroll = (e) => {
+      if (e.deltaY > 0) {
+        window.scrollBy({
+          top: 0,
+          left: 80,
+        })
+      } else {
+        window.scrollBy({
+          top: 0,
+          left: -80,
+        })
+      }
+    }
+
     return (
         <PageContainer>
-        <Container>
-          <BackButton />
-          {animals.map(animal => <Animal key={animal.id} animal={animal} />)}
-        </Container>
+          <Container onWheel={scroll}  >
+            <BackButton />
+            {animals.map(animal => <Animal key={animal.id} animal={animal} />)}
+          </Container>
         </PageContainer>
     )
 }
