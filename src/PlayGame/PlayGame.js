@@ -88,7 +88,6 @@ function Animal({animal}) {
   }, [lang, selected, setSelected, settings])
 
   const quizHandler = async () => {
-    console.log('quiz done...')
     const audio = await ttsApi.getAudio(animal.name(lang))
     await playAudio(Uint8Array.from(audio.audioContent.data).buffer)
     await sleep(1100)

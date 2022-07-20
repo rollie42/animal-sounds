@@ -1,6 +1,9 @@
 import { useGameSettings } from 'Context';
 import { useCallback, useEffect, useState } from 'react';
 import { HFlex, VFlex } from 'Shared';
+import { useTtsApi } from 'tts_api_client';
+import { playAudio } from 'audioUtil';
+import { sleep } from 'utils';
 import styled from 'styled-components';
 
 const EngKeyboardKeyContainer = styled.span`
@@ -11,7 +14,7 @@ const EngKeyboardKeyContainer = styled.span`
   align-items: center;
   flex: 1;
   text-align: center;
-  font-size: 130px;
+  font-size: 16vh;
   font-weight: 700;
   height: 100%;
   cursor: pointer;
@@ -63,13 +66,8 @@ function EngKeyboardKey({ letter, word, curLetterIdx, setCurLetterIdx }) {
   const keyClick = useCallback(() => {
     if (status === 'current') {
       setCurLetterIdx(curLetterIdx + 1)
-      console.log('update')
     }
   }, [curLetterIdx, setCurLetterIdx, status])
-
-  if (letter === 'B') {
-    console.log(curLetterIdx, status, style)
-  }
 
   return (
     <EngKeyboardKeyContainer onClick={keyClick} keyStyle={style}>
@@ -78,30 +76,65 @@ function EngKeyboardKey({ letter, word, curLetterIdx, setCurLetterIdx }) {
   );
 }
 const EngKeyboardContainer = styled(VFlex)`
-  flex-direction: column;
+  min-height: 70%;
+  max-height: 70%;
+
 `;
 const EngKeyboardRow = styled(HFlex)`
-  height: 30%;  
+  height: 25%;
+  
 `;
+const PageContainer = styled(VFlex)`
+  
+`;
+const WordContainer = styled(VFlex)`
+  font-size: 14vh;
+  color: #e1e1e1;
+`;
+
+function Word({word, curLetterIdx}) {
+  return (<WordContainer>
+    {word.substring(0, curLetterIdx)}
+  </WordContainer>)
+}
+
 export function EngKeyboard({ word, onComplete }) {
   const [curLetterIdx, setCurLetterIdx] = useState(0)
+  const ttsApi = useTtsApi()
   const rows = ["qwertyuio", "asdfghjkl", "zxcvbnmp"].map(r => r.toUpperCase().split(''))
   useEffect(() => {
-    if (curLetterIdx >= word.length) {
-      onComplete()
-    }
-  }, [curLetterIdx, onComplete, word.length])
+    (async () => { 
+      if (curLetterIdx >= word.length) {
+        await sleep(800)
+        onComplete()
+      }
+    })()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curLetterIdx, word.length])
+
+  // Speak the letters
+  useEffect(() => {
+    (async () => { 
+      if (curLetterIdx > 0) {
+        const audio = await ttsApi.getAudio(word[curLetterIdx - 1])
+        await playAudio(Uint8Array.from(audio.audioContent.data).buffer)
+      }
+    })()
+  }, [curLetterIdx])
   
 
   return (
-    <EngKeyboardContainer>
-      {rows.map(r => 
-        <EngKeyboardRow key={r}>
-          {r.map(l => 
-            <EngKeyboardKey word={word.toUpperCase()} curLetterIdx={curLetterIdx} setCurLetterIdx={setCurLetterIdx} key={l} letter={l} />
-          )}
-        </EngKeyboardRow>  
-      )}
-    </EngKeyboardContainer>
+    <PageContainer>
+      <Word word={word.toUpperCase()} curLetterIdx={curLetterIdx} />
+      <EngKeyboardContainer>
+        {rows.map(r => 
+          <EngKeyboardRow key={r}>
+            {r.map(l => 
+              <EngKeyboardKey word={word.toUpperCase()} curLetterIdx={curLetterIdx} setCurLetterIdx={setCurLetterIdx} key={l} letter={l} />
+            )}
+          </EngKeyboardRow>  
+        )}
+      </EngKeyboardContainer>
+    </PageContainer>
   );
 }
